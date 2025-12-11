@@ -1,13 +1,10 @@
-// auth.js
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
-  getAuth, 
-  onAuthStateChanged, 
-  signOut 
+  getAuth,
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// YOUR FIREBASE CONFIG (exactly as provided)
 const firebaseConfig = {
   apiKey: "AIzaSyAtCYT19ydbMRXJnN2TQkx8ZZ_kirNt5o0",
   authDomain: "lumi-ai-480909.firebaseapp.com",
@@ -18,22 +15,23 @@ const firebaseConfig = {
   measurementId: "G-HYZEDP7686"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
-// PROTECT index.html
+// ⭐ FIXED REDIRECT
 onAuthStateChanged(auth, user => {
-  const protectedPage = window.location.pathname.includes("index.html");
+  const path = window.location.pathname;
 
-  if (!user && protectedPage) {
+  const protectedPages = ["/", "/index.html"];
+
+  if (!user && protectedPages.includes(path)) {
     window.location.href = "/login.html";
   }
 });
 
-// LOGOUT FUNCTION
-export function logout() {
-  signOut(auth).then(() => {
+// Logout
+export function logout(){
+  signOut(auth).then(()=>{
     localStorage.clear();
     window.location.href = "/login.html";
   });
