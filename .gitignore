@@ -1,0 +1,8 @@
+# do not upload environment files
+.env
+
+# node dependencies
+node_modules/
+
+# system files
+.DS_Store
