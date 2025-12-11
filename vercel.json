@@ -1,10 +1,9 @@
 {
     "version": 2,
-    "functions": {
-      "api/summarize.js": {
-        "runtime": "nodejs18.x"
-      }
-    },
+    "builds": [
+      { "src": "api/summarize.js", "use": "@vercel/node" },
+      { "src": "index.html", "use": "@vercel/static" }
+    ],
     "routes": [
       { "src": "/api/summarize", "dest": "/api/summarize.js" },
       { "src": "/(.*)", "dest": "/index.html" }
