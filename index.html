@@ -2,42 +2,49 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Lumi Ai for your Education</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-
+<title>✨ AI Summarizer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-  :root {
-    --bg: #0e0f10;
-    --panel: #141414;
-    --muted: #2b2b2b;
-    --accent: #3e8ef7;
+  :root{
+    --bg:#0e0f10;
+    --panel:#141414;
+    --muted:#2b2b2b;
+    --accent:#3e8ef7;
     --accent-hover:#6baaff;
     --glass: rgba(255,255,255,0.06);
     --text:#e5e7eb;
   }
 
-  * { box-sizing: border-box; }
+  * {
+    box-sizing: border-box;
+    max-width: 100%;     /* Prevent overflow */
+  }
 
-  /* MOBILE-FIXED BODY */
-  body {
+  html, body {
     margin:0;
-    min-height:100dvh;       /* <--- FIX FOR MOBILE SAFARI */
-    display:flex;
+    padding:0;
+    width:100%;
+    min-height:100dvh;
+    overflow-x:hidden !important;
     background:var(--bg);
     color:var(--text);
-    font-family:"Inter",sans-serif;
-    overflow-x:hidden;
-    overflow-y:auto;         /* <--- ENABLE SCROLL ON MOBILE */
+    font-family:"Inter", sans-serif;
+  }
+
+  body {
+    display:flex;
+    flex-direction:row;
   }
 
   /* SIDEBAR */
   .sidebar {
     width:260px;
-    padding:18px;
+    min-width:260px;
     background:#171717;
     border-right:1px solid var(--muted);
+    padding:18px;
     display:flex;
     flex-direction:column;
     gap:12px;
@@ -45,21 +52,24 @@
 
   .sidebar-top {
     display:flex;
-    align-items:center;
     justify-content:space-between;
-    gap:12px;
+    align-items:center;
   }
 
   .new-chat {
+    background:#2a2a2a;
     padding:8px 10px;
     border-radius:8px;
-    background:#2a2a2a;
     cursor:pointer;
     font-size:13px;
   }
   .new-chat:hover { background:#333; }
 
-  #chatList { overflow:auto; padding-top:6px; flex:1; }
+  #chatList {
+    flex:1;
+    overflow-y:auto;
+    padding-top:10px;
+  }
 
   .chat-item-wrapper { position:relative; margin-bottom:10px; }
   .chat-item {
@@ -73,10 +83,9 @@
 
   .dots {
     position:absolute;
-    right:10px;
     top:12px;
+    right:10px;
     opacity:0;
-    font-size:16px;
     cursor:pointer;
   }
   .chat-item-wrapper:hover .dots { opacity:1; }
@@ -87,15 +96,15 @@
     top:36px;
     background:#222;
     border:1px solid #333;
-    border-radius:8px;
     width:150px;
+    border-radius:8px;
     display:none;
     z-index:999;
   }
   .menu div {
     padding:10px;
-    font-size:13px;
     cursor:pointer;
+    font-size:13px;
   }
   .menu div:hover { background:#333; }
 
@@ -104,32 +113,25 @@
     flex:1;
     display:flex;
     flex-direction:column;
-    background:#0f0f0f;
-    min-height:100%;
+    overflow:hidden;
   }
 
   .header {
     height:62px;
     padding:0 20px;
     display:flex;
-    align-items:center;
     justify-content:space-between;
+    align-items:center;
     background:var(--panel);
     border-bottom:1px solid var(--muted);
     font-weight:600;
-    font-size:16px;
   }
-
-  .share-icon {
-    cursor:pointer;
-    opacity:.85;
-  }
-  .share-icon:hover { opacity:1; }
 
   .chat-wrapper {
     flex:1;
-    overflow:auto;
-    padding:20px 28px;
+    padding:20px;
+    overflow-y:auto;
+    overflow-x:hidden !important;
     display:flex;
     flex-direction:column;
     gap:12px;
@@ -138,7 +140,8 @@
   .chat {
     display:flex;
     gap:14px;
-    max-width:820px;
+    align-items:flex-start;
+    width:100%;
   }
 
   .avatar {
@@ -150,20 +153,24 @@
     flex-shrink:0;
   }
 
-  .user-avatar {
-    background-image:url("https://cdn.jsdelivr.net/gh/encharm/Font-Awesome-SVG-PNG/black/png/64/user.png");
-  }
-
-  .ai-avatar {
-    background-image:url("https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f916.svg");
-  }
+  .user-avatar { background-image:url("https://cdn-icons-png.flaticon.com/512/847/847969.png"); }
+  .ai-avatar { background-image:url("https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f916.svg"); }
 
   .bubble {
     padding:14px 18px;
     border-radius:14px;
-    line-height:1.6;
     font-size:15px;
-    max-width:78%;
+    line-height:1.6;
+    word-wrap:break-word;
+    overflow-wrap:break-word;
+    max-width:75%;
+  }
+
+  .user-bubble {
+    background:var(--accent);
+    color:white;
+    margin-left:auto;
+    border-radius:14px 14px 4px 14px;
   }
 
   .ai-bubble {
@@ -171,63 +178,49 @@
     border:1px solid rgba(255,255,255,0.08);
   }
 
-  .user-bubble {
-    margin-left:auto;
-    background:var(--accent);
-    color:#fff;
-    border-radius:14px 14px 4px 14px;
-  }
-
   /* INPUT AREA */
   .input-area {
+    padding:14px;
     display:flex;
     align-items:center;
     gap:12px;
-    padding:14px;
-    border-top:1px solid var(--muted);
     background:var(--panel);
+    border-top:1px solid var(--muted);
   }
 
   textarea {
     flex:1;
     min-height:54px;
     max-height:180px;
-    padding:12px;
-    border-radius:10px;
+    resize:none;
     background:#1f1f1f;
     border:1px solid var(--muted);
+    border-radius:10px;
+    padding:12px;
     color:var(--text);
-    resize:none;
-    font-size:14px;
   }
 
   .select-wrapper {
     position:relative;
-    width:190px;
+    width:150px;
     flex-shrink:0;
   }
 
   select {
     width:100%;
-    padding:11px 40px 11px 12px;
+    padding:10px 34px 10px 10px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.07);
     border-radius:10px;
-    background:rgba(255,255,255,0.04);
-    border:1px solid rgba(255,255,255,0.08);
     color:var(--text);
-    font-size:14px;
-    appearance:none;
-    outline:none;
-    cursor:pointer;
   }
 
   .select-wrapper::after {
     content:"▾";
     position:absolute;
-    right:12px;
+    right:10px;
     top:50%;
     transform:translateY(-50%);
-    color:#9ca3af;
-    pointer-events:none;
   }
 
   .controls {
@@ -239,260 +232,70 @@
   .action-btn {
     background:var(--accent);
     border:none;
-    color:white;
     padding:10px 18px;
     border-radius:10px;
+    color:white;
     font-weight:700;
-    font-size:14px;
-    height:44px;
-    cursor:pointer;
   }
 
   .regen-btn {
     background:#2f2f2f;
-    border:1px solid rgba(255,255,255,0.04);
-    color:var(--text);
+    border:1px solid rgba(255,255,255,0.08);
     padding:10px 18px;
     border-radius:10px;
-    font-weight:600;
-    height:44px;
-    cursor:pointer;
   }
 
-  @media (max-width:900px){
-    .sidebar{ display:none; }
-    .chat-wrapper{ padding:14px; }
+  @media(max-width:900px){
+    .sidebar { display:none; }
+    body { flex-direction:column; }
+    .chat-wrapper { padding:14px; }
+    .select-wrapper { width:120px; }
   }
 </style>
-
 </head>
+
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <div class="sidebar-top">
-    <h2>Chats</h2>
-    <div class="new-chat" onclick="newChat()">+ New</div>
-  </div>
-  <div id="chatList"></div>
-</div>
-
-<!-- MAIN -->
-<div class="main">
-  <div class="header">
-    <div>✨ AI Summarizer</div>
-    <div class="share-icon" onclick="shareChat()">🔗 Share</div>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-top">
+      <h2>Chats</h2>
+      <div class="new-chat" onclick="newChat()">+ New</div>
+    </div>
+    <div id="chatList"></div>
   </div>
 
-  <div id="chatBox" class="chat-wrapper"></div>
+  <!-- MAIN -->
+  <div class="main">
 
-  <div class="input-area">
-    <textarea id="inputText" placeholder="Type something to summarize..."></textarea>
-
-    <div class="select-wrapper">
-      <select id="mode">
-        <option value="concise">Concise</option>
-        <option value="detailed">Detailed</option>
-        <option value="bullet">Bullet Points</option>
-        <option value="simple">Simple</option>
-        <option value="professional">Professional</option>
-      </select>
+    <div class="header">
+      <span>✨ AI Summarizer</span>
+      <div onclick="shareChat()" style="cursor:pointer">🔗 Share</div>
     </div>
 
-    <div class="controls">
-      <button class="action-btn" onclick="sendMsg()">Send</button>
-      <button class="regen-btn" onclick="regenerate()">⟳ Regenerate</button>
+    <div id="chatBox" class="chat-wrapper"></div>
+
+    <div class="input-area">
+      <textarea id="inputText" placeholder="Type something to summarize..."></textarea>
+
+      <div class="select-wrapper">
+        <select id="mode">
+          <option value="concise">Concise</option>
+          <option value="detailed">Detailed</option>
+          <option value="bullet">Bullet Points</option>
+          <option value="simple">Simple</option>
+          <option value="professional">Professional</option>
+        </select>
+      </div>
+
+      <div class="controls">
+        <button class="action-btn" onclick="sendMsg()">Send</button>
+        <button class="regen-btn" onclick="regenerate()">⟳</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- SCRIPT -->
-<script>
-/* Data storage */
-let chats = JSON.parse(localStorage.getItem("summaries") || "{}");
-let currentChat = null;
-
-/* Utilities */
-function generateID(){ return "chat_" + Math.floor(Math.random()*1e12); }
-function saveChats(){ localStorage.setItem("summaries", JSON.stringify(chats)); loadChatHistory(); }
-function updateURL(){ history.replaceState(null,"", "?chat_id=" + currentChat); }
-
-/* Initialization */
-const params = new URLSearchParams(window.location.search);
-if(params.has("chat_id") && chats[params.get("chat_id")]) {
-  currentChat = params.get("chat_id");
-} else {
-  currentChat = generateID();
-  chats[currentChat] = [];
-  saveChats();
-}
-
-/* Sidebar */
-function loadChatHistory(){
-  const list = document.getElementById("chatList");
-  list.innerHTML = "";
-  Object.keys(chats).reverse().forEach(id=>{
-    const wrap = document.createElement("div");
-    wrap.className="chat-item-wrapper";
-
-    const item = document.createElement("div");
-    item.className="chat-item";
-    item.innerText = chats[id][0]?.input?.slice(0,28) || "New Chat";
-    item.onclick = ()=>{ currentChat=id; loadChatContent(); updateURL(); };
-
-    const dots = document.createElement("div");
-    dots.className="dots";
-    dots.innerText="⋮";
-    dots.onclick = e=>toggleMenu(e,id);
-
-    const menu = document.createElement("div");
-    menu.className="menu";
-    menu.innerHTML = `
-      <div onclick="shareSpecificChat('${id}')">Share Link</div>
-      <div onclick="deleteChat('${id}')">Delete Chat</div>`;
-
-    wrap.appendChild(item);
-    wrap.appendChild(dots);
-    wrap.appendChild(menu);
-    list.appendChild(wrap);
-  });
-}
-
-/* Close menus */
-function toggleMenu(e,id){
-  e.stopPropagation();
-  closeAllMenus();
-  const menu = e.target.nextElementSibling;
-  menu.style.display="block";
-}
-function closeAllMenus(){
-  document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
-}
-document.body.addEventListener("click", closeAllMenus);
-
-/* Chat display */
-function loadChatContent(){
-  const box = document.getElementById("chatBox");
-  box.innerHTML="";
-  (chats[currentChat]||[]).forEach(m=>{
-    addMessage(m.input,"user");
-    addMessage(m.output,"ai");
-  });
-}
-
-function addMessage(text, sender){
-  const row=document.createElement("div");
-  row.className="chat";
-
-  const avatar=document.createElement("div");
-  avatar.className="avatar "+(sender==="user"?"user-avatar":"ai-avatar");
-
-  const bubble=document.createElement("div");
-  bubble.className="bubble "+(sender==="user"?"user-bubble":"ai-bubble");
-  bubble.innerText=text;
-
-  row.appendChild(avatar);
-  row.appendChild(bubble);
-
-  const box=document.getElementById("chatBox");
-  box.appendChild(row);
-  box.scrollTop=box.scrollHeight;
-}
-
-/* Send */
-async function sendMsg(){
-  const txt=document.getElementById("inputText").value;
-  const mode=document.getElementById("mode").value;
-  if(!txt.trim()) return;
-
-  addMessage(txt,"user");
-  document.getElementById("inputText").value="";
-  addMessage("Thinking… ✨","ai");
-
-  try {
-    const res = await fetch("/api/summarize",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ text:txt, mode })
-    });
-
-    const data = await res.json();
-    const aiMsgs=document.querySelectorAll(".ai-bubble");
-    aiMsgs[aiMsgs.length-1].innerText = data.summary || "No summary returned.";
-
-    chats[currentChat].push({ input:txt, output:data.summary || "" });
-    saveChats();
-  }
-  catch {
-    const aiMsgs=document.querySelectorAll(".ai-bubble");
-    aiMsgs[aiMsgs.length-1].innerText="⚠️ Error contacting server.";
-  }
-}
-
-/* Regenerate */
-async function regenerate(){
-  const history = chats[currentChat] || [];
-  if(history.length===0) return alert("No message to regenerate");
-
-  const last = history[history.length-1];
-  const mode = document.getElementById("mode").value;
-
-  addMessage("Regenerating… 🔄","ai");
-
-  try {
-    const res = await fetch("/api/summarize", {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ text:last.input, mode })
-    });
-
-    const data = await res.json();
-    const aiMsgs=document.querySelectorAll(".ai-bubble");
-    aiMsgs[aiMsgs.length-1].innerText = data.summary || "No summary returned.";
-
-    chats[currentChat][history.length-1].output = data.summary || "";
-    saveChats();
-  }
-  catch {
-    const aiMsgs=document.querySelectorAll(".ai-bubble");
-    aiMsgs[aiMsgs.length-1].innerText="⚠️ Error contacting server.";
-  }
-}
-
-/* New chat */
-function newChat(){
-  currentChat=generateID();
-  chats[currentChat]=[];
-  saveChats();
-  loadChatContent();
-  updateURL();
-}
-
-/* Sharing */
-function shareChat(){
-  const link=window.location.origin+"?chat_id="+currentChat;
-  navigator.clipboard.writeText(link);
-  alert("Chat link copied!");
-}
-function shareSpecificChat(id){
-  const link=window.location.origin+"?chat_id="+id;
-  navigator.clipboard.writeText(link);
-  alert("Chat link copied!");
-}
-
-/* Delete */
-function deleteChat(id){
-  if(!confirm("Delete this chat?")) return;
-  delete chats[id];
-  saveChats();
-  if(id===currentChat) newChat();
-}
-
-/* Init */
-loadChatHistory();
-loadChatContent();
-
-</script>
+<script src="/summarize.js"></script>
 
 </body>
 </html>
