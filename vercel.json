@@ -1,0 +1,13 @@
+{
+    "version": 2,
+    "functions": {
+      "api/summarize.js": {
+        "runtime": "nodejs18.x"
+      }
+    },
+    "routes": [
+      { "src": "/api/summarize", "dest": "/api/summarize.js" },
+      { "src": "/(.*)", "dest": "/index.html" }
+    ]
+  }
+  
