@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login – Lumi AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{
+      background:#0e0f10; color:#fff; margin:0;
+      font-family:Inter,sans-serif;
+      display:flex; justify-content:center; align-items:center;
+      height:100dvh;
+    }
+    .box{
+      width:90%; max-width:360px; background:#151515;
+      padding:30px; border-radius:14px;
+    }
+    h2{margin:0 0 20px}
+    input{
+      width:100%; padding:12px; margin:10px 0;
+      border-radius:10px; border:1px solid #333;
+      background:#1f1f1f; color:white;
+    }
+    button{
+      width:100%; padding:12px; margin-top:10px;
+      background:#3e8ef7; border:none;
+      color:white; border-radius:10px; font-size:16px;
+      cursor:pointer;
+    }
+    a{color:#3e8ef7; text-decoration:none;}
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Login</h2>
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <p style="margin-top:14px;">Don’t have an account? <a href="signup.html">Sign Up</a></p>
+</div>
+
+<script type="module">
+import { auth } from "./auth.js";
+import { 
+  signInWithEmailAndPassword 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+window.login = function(){
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
+
+  signInWithEmailAndPassword(auth, email, pass)
+  .then(()=>{
+    window.location.href = "/index.html";
+  })
+  .catch(err=> alert(err.message));
+};
+</script>
+
+</body>
+</html>
