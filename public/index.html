@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Lumi AI – Your AI Companion</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- AUTH REDIRECT -->
+<script type="module" src="auth.js"></script>
+
+<style>
+  :root{
+    --bg:#0e0f10;
+    --panel:#141414;
+    --muted:#2b2b2b;
+    --accent:#3e8ef7;
+    --accent-hover:#6baaff;
+    --glass: rgba(255,255,255,0.06);
+    --text:#e5e7eb;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Inter",sans-serif;
+    min-height:100vh;
+    display:flex;
+    overflow:hidden;
+  }
+
+  /* SIDEBAR */
+  .sidebar{
+    width:260px;
+    padding:18px;
+    background:#171717;
+    border-right:1px solid var(--muted);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .sidebar-top{display:flex;justify-content:space-between;align-items:center;}
+  .new-chat{
+    padding:8px 10px;background:#2a2a2a;border-radius:8px;cursor:pointer;font-size:13px;
+  }
+  .new-chat:hover{background:#333;}
+  #chatList{flex:1;overflow:auto;}
+
+  .chat-item-wrapper{position:relative;margin-bottom:10px;}
+  .chat-item{
+    padding:12px 16px;background:#202020;border-radius:10px;cursor:pointer;font-size:13px;
+  }
+  .chat-item:hover{background:#2b2b2b;}
+  .dots{
+    position:absolute;right:10px;top:12px;font-size:16px;opacity:0;cursor:pointer;
+  }
+  .chat-item-wrapper:hover .dots{opacity:1;}
+
+  .menu{
+    position:absolute;right:0;top:36px;background:#222;border:1px solid #333;border-radius:8px;width:150px;display:none;z-index:999;
+  }
+  .menu div{padding:10px;font-size:13px;}
+  .menu div:hover{background:#333;}
+
+  /* MAIN */
+  .main{
+    flex:1;display:flex;flex-direction:column;background:#0f0f0f;
+  }
+  .header{
+    height:62px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;
+    background:var(--panel);border-bottom:1px solid var(--muted);font-size:16px;font-weight:600;
+  }
+  .logout-btn{background:none;border:none;color:#bbb;font-size:14px;cursor:pointer;}
+  .logout-btn:hover{color:#fff;}
+
+  .chat-wrapper{
+    flex:1;overflow:auto;padding:20px 20px;display:flex;flex-direction:column;gap:12px;
+  }
+
+  .chat{display:flex;gap:14px;max-width:820px;}
+  .avatar{
+    width:44px;height:44px;border-radius:50%;background-size:cover;background-position:center;
+  }
+  .user-avatar{background-image:url("https://cdn.jsdelivr.net/gh/encharm/Font-Awesome-SVG-PNG/black/png/64/user.png")}
+  .ai-avatar{background-image:url("https://cdn.jsdelivr.net/gh/twitter/twemoji/assets/svg/1f916.svg")}
+
+  .bubble{
+    padding:14px 18px;border-radius:14px;line-height:1.6;font-size:15px;max-width:78%;
+  }
+  .ai-bubble{
+    background:var(--glass);border:1px solid rgba(255,255,255,0.08);
+  }
+  .user-bubble{
+    margin-left:auto;background:var(--accent);color:white;border-radius:14px 14px 4px 14px;
+  }
+
+  /* INPUT */
+  .input-area{
+    padding:14px;display:flex;align-items:center;gap:12px;
+    background:var(--panel);border-top:1px solid var(--muted);
+  }
+  textarea{
+    flex:1;min-height:54px;max-height:180px;padding:12px;
+    border-radius:10px;background:#1f1f1f;border:1px solid var(--muted);
+    color:white;font-size:14px;resize:none;
+  }
+
+  .select-wrapper{width:190px;position:relative;}
+  select{
+    width:100%;padding:11px 40px 11px 12px;border-radius:10px;
+    background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+    color:var(--text);font-size:14px;appearance:none;
+  }
+  .select-wrapper::after{
+    content:"▾";position:absolute;right:12px;top:50%;transform:translateY(-50%);
+    color:#999;pointer-events:none;
+  }
+
+  .action-btn{
+    background:var(--accent);padding:10px 18px;border:none;border-radius:10px;
+    font-size:14px;color:white;cursor:pointer;height:44px;font-weight:600;
+  }
+  .regen-btn{
+    background:#2f2f2f;padding:10px 18px;border-radius:10px;color:white;border:1px solid #333;
+    cursor:pointer;height:44px;
+  }
+
+  @media(max-width:900px){
+    .sidebar{display:none;}
+    body{overflow-y:auto;}
+  }
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-top">
+    <h2>Chats</h2>
+    <div class="new-chat" onclick="newChat()">+ New</div>
+  </div>
+  <div id="chatList"></div>
+</div>
+
+<div class="main">
+  <div class="header">
+    <div>✨ Lumi AI</div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div id="chatBox" class="chat-wrapper"></div>
+
+  <div class="input-area">
+    <textarea id="inputText" placeholder="Type something to summarize..."></textarea>
+
+    <div class="select-wrapper">
+      <select id="mode">
+        <option value="concise">Concise</option>
+        <option value="detailed">Detailed</option>
+        <option value="bullet">Bullet Points</option>
+        <option value="simple">Simple</option>
+        <option value="professional">Professional</option>
+      </select>
+    </div>
+
+    <button class="action-btn" onclick="sendMsg()">Send</button>
+    <button class="regen-btn" onclick="regenerate()">⟳</button>
+  </div>
+</div>
+
+
+<script src="summarize.js"></script>
+<script type="module" src="auth.js"></script>
+
+</body>
+</html>
